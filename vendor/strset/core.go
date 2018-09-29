@@ -10,27 +10,22 @@ import (
 	"bytes"
 	"sort"
 	"strings"
+	"fmt"
 )
 
-// Set of strings.
+// Set of SetType type.
 type Set struct {
-	store map[string]struct{}
+	store map[SetType]struct{}
 }
 
 // Make creates and returns a new Set.
-func Make(elems ...string) Set {
+func Make(elems ...SetType) Set {
 	s := Set{}
-	s.store = make(map[string]struct{})
+	s.store = make(map[SetType]struct{})
 	for _, elem := range elems {
 		s.store[elem] = struct{}{}
 	}
 	return s
-}
-
-// MakeFromText creates and returns a new Set from
-// a string of elements separated by whitespace.
-func MakeFromText(text string) Set {
-	return Make(strings.Fields(text)...)
 }
 
 // Len reports the number of elements in the set.
@@ -40,13 +35,13 @@ func (s Set) Len() int {
 
 // Contains reports whether set contains the element.
 // Math: S ∋ e.
-func (s Set) Contains(elem string) bool {
+func (s Set) Contains(elem SetType) bool {
 	_, found := s.store[elem]
 	return found
 }
 
 // ContainsAll reports whether s contains all the given elements.
-func (s Set) ContainsAll(elems ...string) bool {
+func (s Set) ContainsAll(elems ...SetType) bool {
 	for _, elem := range elems {
 		if _, found := s.store[elem]; !found {
 			return false
@@ -57,8 +52,8 @@ func (s Set) ContainsAll(elems ...string) bool {
 
 // ToSlice returns a new slice with the elements of s.
 // The order of the elements is undefined.
-func (s Set) ToSlice() []string {
-	elems := make([]string, len(s.store))
+func (s Set) ToSlice() []SetType {
+	elems := make([]SetType, len(s.store))
 	i := 0
 	for k := range s.store {
 		elems[i] = k
@@ -67,14 +62,18 @@ func (s Set) ToSlice() []string {
 	return elems
 }
 
-// String returns a string representation of s with
+// SetType returns a SetType representation of s with
 // elements in lexicographic order.
 func (s Set) String() string {
 	elems := s.ToSlice()
-	sort.Strings(elems)
+	selems := []string{}
+	for _, e := range elems {
+		selems = append(selems, fmt.Sprint(e))
+	}
+	sort.Strings(selems)
 	var buf bytes.Buffer
 	buf.WriteString("Set{")
-	buf.WriteString(strings.Join(elems, " "))
+	buf.WriteString(strings.Join(selems, " "))
 	buf.WriteByte('}')
 	return buf.String()
 }
@@ -105,8 +104,8 @@ func (s Set) Copy() Set {
 
 // Channel returns a channel to a goroutine
 // yielding elements one by one.
-func (s Set) Channel() <-chan string {
-	ch := make(chan string)
+func (s Set) Channel() <-chan SetType {
+	ch := make(chan SetType)
 	go func() {
 		for elem := range s.store {
 			ch <- elem

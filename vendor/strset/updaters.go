@@ -6,24 +6,24 @@ package strset
 */
 
 // Add element to set.
-func (s Set) Add(elem string) {
+func (s Set) Add(elem SetType) {
 	s.store[elem] = struct{}{}
 }
 
 // AddAll adds elements to set.
-func (s Set) AddAll(elems ...string) {
+func (s Set) AddAll(elems ...SetType) {
 	for _, elem := range elems {
 		s.store[elem] = struct{}{}
 	}
 }
 
 // Remove element from set, if it is present.
-func (s Set) Remove(elem string) {
+func (s Set) Remove(elem SetType) {
 	delete(s.store, elem)
 }
 
 // RemoveAll removes elements from set, if they are present.
-func (s Set) RemoveAll(elems ...string) {
+func (s Set) RemoveAll(elems ...SetType) {
 	for _, elem := range elems {
 		delete(s.store, elem)
 	}
@@ -31,7 +31,7 @@ func (s Set) RemoveAll(elems ...string) {
 
 // Pop tries to return some element of s, deleting it. If there was an element,
 // the pair (element, true) is returned. Otherwise, the result is ("", false).
-func (s Set) Pop() (elem string, found bool) {
+func (s Set) Pop() (elem SetType, found bool) {
 	for elem = range s.store {
 		delete(s.store, elem)
 		return elem, true
@@ -41,7 +41,7 @@ func (s Set) Pop() (elem string, found bool) {
 
 // Clear removes all elements from s.
 func (s *Set) Clear() {
-	s.store = make(map[string]struct{})
+	s.store = make(map[SetType]struct{})
 }
 
 /* Set operations that change the receiver */
